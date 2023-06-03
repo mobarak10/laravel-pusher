@@ -2,81 +2,31 @@ import {usePiniaStore} from "./index";
 import state from "./state";
 
 export default {
-    async loadAllDivision(){
-        const url = `${baseURL}/utility/get-all-division`
+    async fetchMessages(){
+        const url = `${baseURL}/messages`
         const response = await axios.get(url)
 
         const store = this.store()
         store.$patch(state => {
-            state.divisions = response.data
+            state.messages = response.data
         })
 
     },
 
-    async loadAllBranches(){
-        const url = `${baseURL}/utility/get-all-branch`
-        const response = await axios.get(url)
-
+    async addMessage(payload) {
         const store = this.store()
         store.$patch(state => {
-            state.branches = response.data
+            state.messages.push(payload)
         })
-
-    },
-
-    async getDistrictForDivision(payload){
-        const store = this.store()
-        const url = `${baseURL}/utility/get-district-for-division`
-        const response = await axios.post(url, payload)
-
-        store.$patch(state => {
-            if (payload.from === 'permanent'){
-                state.permanentDistricts = response.data
-            }else {
-                state.districts = response.data
-            }
-        })
-
-    },
-
-    async getAreaForBranch(payload){
-        const store = this.store()
-        const url = `${baseURL}/utility/get-area-for-branch`
-        const response = await axios.post(url, payload)
-
-        store.$patch(state => {
-            state.areas = response.data
-        })
-
-    },
-
-    async getAreaForUserBranch(){
-        const store = this.store()
-        const url = `${baseURL}/utility/get-area-for-user-branch`
-        const response = await axios.get(url)
-
-        store.$patch(state => {
-            state.areas = response.data
-        })
-
-    },
-
-    async getUpazilaForDistrict(payload){
-        const url = `${baseURL}/utility/get-upazila-for-district`
-        const response = await axios.post(url, payload)
-
-        const store = this.store()
-        store.$patch(state => {
-            if (payload.from === 'permanent'){
-                state.permanentUpazilas = response.data
-            }else {
-                state.upazilas = response.data
-            }
-        })
-
+        //POST request to the messages route with the message data in order for our Laravel server to broadcast it.
+        axios.post(baseURL + '/messages', payload).then(response => {
+            console.log(response.data);
+        });
     },
 
     store() {
         return usePiniaStore()
     }
 }
+
+
