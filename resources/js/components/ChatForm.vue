@@ -21,10 +21,28 @@
     </div>
 </template>
 <script setup>
-import {onMounted, ref} from "vue";
+import { storeToRefs } from 'pinia';
+import {onMounted, ref, watch } from "vue";
 import {usePiniaStore} from "../store";
 
 const store = usePiniaStore()
+
+const { messages: _messages } = storeToRefs(store)
+
+watch(_messages, (messages) => {
+    if (messages) {
+        store.fetchMessages()
+        window.Echo.private('chat')
+            .listen('MessageSent', (e) => {
+                store.$patch(state => {
+                    state.messages.push({
+                        message: e.message.message,
+                        user: e.user
+                    })
+                })
+            });
+    }
+},{ deep: true })
 
 const props = defineProps({
     user: Object,
@@ -37,6 +55,16 @@ const sendMessage = () => {
 }
 
 onMounted(() => {
-    console.log('hello from chat form')
+    store.fetchMessages()
+    window.Echo.private('chat')
+        .listen('MessageSent', (e) => {
+            const store = this.store()
+            store.$patch(state => {
+                state.messages.push({
+                    message: e.message.message,
+                    user: e.user
+                })
+            })
+        });
 })
 </script>
