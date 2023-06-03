@@ -1,12 +1,12 @@
 <template>
     <ul class="chat">
-        <li class="left clearfix" v-for="message in store.messages" :key="message.id">
-            <div class="clearfix">
-<!--                <div class="header">-->
-<!--                    <strong>-->
-<!--                        {{ message.user.name }}-->
-<!--                    </strong>-->
-<!--                </div>-->
+        <li class="clearfix" v-for="message in store.messages" :key="message.id">
+            <div class="clearfix" :class="store.loginUser.id == message.user_id ? 'text-end' : ''">
+                <div class="header">
+                    <strong>
+                        {{ message.user.name }}
+                    </strong>
+                </div>
                 <p>
                     {{ message.message }}
                 </p>

@@ -56,15 +56,8 @@ const sendMessage = () => {
 
 onMounted(() => {
     store.fetchMessages()
-    window.Echo.private('chat')
-        .listen('MessageSent', (e) => {
-            const store = this.store()
-            store.$patch(state => {
-                state.messages.push({
-                    message: e.message.message,
-                    user: e.user
-                })
-            })
-        });
+    store.$patch(state => {
+        state.loginUser = props.user
+    })
 })
 </script>
